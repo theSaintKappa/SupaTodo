@@ -4,13 +4,15 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useMediaQuery from "@/hooks/use-media-query";
+import supabase from "@/supabase";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AuthResponse } from "@supabase/supabase-js";
 import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 export function EmailSignInDialog() {
     const [open, setOpen] = useState(false);
@@ -44,16 +46,18 @@ type AuthAction = "signIn" | "signUp";
 function EmailAuthForm({ className }: React.ComponentProps<"form">) {
     const [action, setAction] = useState<AuthAction>("signIn");
     const [loading, setLoading] = useState(false);
+    const [authResponse, setAuthResponse] = useState<AuthResponse | null>(null);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: { email: "", password: "" },
     });
 
-    async function handleAuth(data: z.infer<typeof FormSchema>) {
+    async function handleAuth({ email, password }: z.infer<typeof FormSchema>) {
         setLoading(true);
-        console.log(data, action);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setAuthResponse(null);
+        if (action === "signIn") await supabase.auth.signInWithPassword({ email, password }).then((res) => setAuthResponse(res));
+        else if (action === "signUp") await supabase.auth.signUp({ email, password }).then((res) => setAuthResponse(res));
         setLoading(false);
     }
 
@@ -88,6 +92,11 @@ function EmailAuthForm({ className }: React.ComponentProps<"form">) {
                             </FormItem>
                         )}
                     />
+
+                    {authResponse?.error && <p className="text-[hsl(var(--destructive))] text-sm font-bold text-center">{authResponse.error.message}</p>}
+                    {authResponse?.data.user?.role && <p className="text-[hsl(var(--primary))] text-sm font-bold text-center">We've sent a verification email to {authResponse.data.user.email}</p>}
+                    {authResponse?.data.user?.identities?.length === 0 && <p className="text-[hsl(var(--primary))] text-sm font-bold text-center">A user with this email already exists. Maybe you used a provider to sign up?</p>}
+
                     <Button type="submit" className="m-auto mt-4 px-8" disabled={loading}>
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {submitText}

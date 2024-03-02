@@ -1,10 +1,9 @@
+import { AuthenticatedUser } from "@/components/AuthenticatedUser";
 import { SignInCard } from "@/components/SignInCard";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import supabase from "@/supabase";
 import { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { SignOutButton } from "./components/SignOutButton";
 
 function App() {
     const [session, setSession] = useState<Session | null>(null);
@@ -21,8 +20,7 @@ function App() {
 
     return (
         <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-            <ThemeToggle />
-            {session ? <SignOutButton /> : <SignInCard />}
+            {!session ? <SignInCard /> : <AuthenticatedUser key={session.user.id} session={session} />}
         </ThemeProvider>
     );
 }
