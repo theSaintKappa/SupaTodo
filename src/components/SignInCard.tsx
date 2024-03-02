@@ -47,7 +47,7 @@ export function SignInCard() {
             <div className="absolute right-0 m-2">
                 <ThemeToggle />
             </div>
-            <main className="w-full flex justify-center items-center">
+            <main className="w-full flex justify-center items-center p-4">
                 <Card className="w-full max-w-xl py-8 flex flex-col items-center gap-4 animate-fly-in">
                     <CardHeader className="flex flex-col items-center">
                         <CardTitle className="text-3xl text-center font-extrabold">Log in to continue</CardTitle>
