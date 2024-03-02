@@ -26,9 +26,9 @@ export function AuthenticatedUser({ session }: { session: Session }) {
     useEffect(() => {
         async function fetchProfile() {
             if (user.app_metadata.provider === "email") {
-                // TODO: Add database types
-                const { data } = await supabase.from("email_profiles").select("user_name, avatar_url").eq("id", user.id);
-                if (data && data.length === 0) return navigate("/finish-signup");
+                const { data, error } = await supabase.from("email_profiles").select("user_name, avatar_url").eq("id", user.id);
+                if (error) throw error;
+                if (data.length === 0) return navigate("/finish-signup");
                 setUserName(data[0].user_name);
                 setAvatarUrl(data[0].avatar_url);
                 return;
