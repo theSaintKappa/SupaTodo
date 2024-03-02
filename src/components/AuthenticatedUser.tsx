@@ -4,6 +4,7 @@ import { FinishSignUp } from "@/pages/FinishSignUp";
 import { TodosView } from "@/pages/TodosView";
 import { UserProfile } from "@/pages/UserProfile";
 import supabase from "@/supabase";
+import { getUserProfile } from "@/utils/getUserProfile";
 import { Session } from "@supabase/supabase-js";
 import { LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -24,19 +25,11 @@ export function AuthenticatedUser({ session }: { session: Session }) {
     }
 
     useEffect(() => {
-        async function fetchProfile() {
-            if (user.app_metadata.provider === "email") {
-                const { data, error } = await supabase.from("email_profiles").select("user_name, avatar_url").eq("id", user.id);
-                if (error) throw error;
-                if (data.length === 0) return navigate("/finish-signup");
-                setUserName(data[0].user_name);
-                setAvatarUrl(data[0].avatar_url);
-                return;
-            }
-            setUserName(user.user_metadata.user_name);
-            setAvatarUrl(user.user_metadata.avatar_url);
-        }
-        fetchProfile();
+        getUserProfile(user).then((profile) => {
+            if (profile === null) return navigate("/finish-signup");
+            setUserName(profile.user_name);
+            setAvatarUrl(profile.avatar_url);
+        });
     }, [user, navigate]);
 
     return (
