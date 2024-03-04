@@ -3,25 +3,31 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
     public: {
         Tables: {
-            email_profiles: {
+            profiles: {
                 Row: {
                     avatar_url: string | null;
+                    has_finished_signup: boolean;
                     id: string;
-                    user_name: string;
+                    sync_with_provider: boolean;
+                    user_name: string | null;
                 };
                 Insert: {
                     avatar_url?: string | null;
+                    has_finished_signup?: boolean;
                     id: string;
-                    user_name: string;
+                    sync_with_provider?: boolean;
+                    user_name?: string | null;
                 };
                 Update: {
                     avatar_url?: string | null;
+                    has_finished_signup?: boolean;
                     id?: string;
-                    user_name?: string;
+                    sync_with_provider?: boolean;
+                    user_name?: string | null;
                 };
                 Relationships: [
                     {
-                        foreignKeyName: "email_profiles_id_fkey";
+                        foreignKeyName: "profiles_id_fkey";
                         columns: ["id"];
                         isOneToOne: true;
                         referencedRelation: "users";

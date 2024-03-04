@@ -1,20 +1,17 @@
 import supabase from "@/supabase";
+import { Tables } from "@/types/db.types";
 import { User } from "@supabase/supabase-js";
 
-interface UserProfile {
-    user_name: string;
-    avatar_url: string;
-}
+export async function getUserProfile(user: User): Promise<Tables<"profiles">> {
+    const { data, error } = await supabase.from("profiles").select().eq("id", user.id).limit(1).single();
+    if (error) throw error;
 
-export async function getUserProfile(user: User): Promise<UserProfile | null> {
+    // User data from database
+    const { id, has_finished_signup, sync_with_provider } = data;
+
+    // User data from provider
     const { user_name, avatar_url } = user.user_metadata;
 
-    if (user.app_metadata.provider === "email") {
-        const { data, error } = await supabase.from("email_profiles").select("user_name, avatar_url").eq("id", user.id);
-        if (error) throw error;
-        if (data.length === 0) return null;
-        return data[0] as UserProfile;
-    }
-
-    return { user_name, avatar_url };
+    if (sync_with_provider) return { id, user_name, avatar_url, has_finished_signup, sync_with_provider };
+    return data;
 }

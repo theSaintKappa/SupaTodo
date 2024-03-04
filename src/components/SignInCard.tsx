@@ -62,7 +62,7 @@ export function SignInCard() {
                                 </Button>
                             ))}
                         </div>
-                        <Separator className="relative flex justify-center items-center before:absolute before:content-['or'] before:font-medium text-xs before:bg-[hsl(var(--card))] before:px-1 before:leading-3 before:text-slate-400" />
+                        <Separator className="relative flex justify-center items-center before:absolute before:content-['or'] before:font-medium text-xs before:bg-card before:px-1 before:leading-3 before:text-slate-400" />
                         <EmailSignInDialog />
                     </CardContent>
                 </Card>
