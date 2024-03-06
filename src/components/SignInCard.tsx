@@ -1,4 +1,4 @@
-import { EmailSignInDialog } from "@/components/EmailAuthForm";
+import { EmailAuthDialog } from "@/components/EmailAuthDialog";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,7 +63,7 @@ export function SignInCard() {
                             ))}
                         </div>
                         <Separator className="relative flex justify-center items-center before:absolute before:content-['or'] before:font-medium text-xs before:bg-card before:px-1 before:leading-3 before:text-slate-400" />
-                        <EmailSignInDialog />
+                        <EmailAuthDialog />
                     </CardContent>
                 </Card>
             </main>

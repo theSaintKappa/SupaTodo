@@ -1,6 +1,7 @@
 import { AuthenticatedUser } from "@/components/AuthenticatedUser";
 import { SignInCard } from "@/components/SignInCard";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Toaster } from "@/components/ui/sonner";
 import supabase from "@/supabase";
 import { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ function App() {
 
     return (
         <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+            <Toaster />
             {!session ? <SignInCard /> : <AuthenticatedUser key={session.user.id} session={session} />}
         </ThemeProvider>
     );

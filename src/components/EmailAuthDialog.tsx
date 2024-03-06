@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Dialog as UiDialog, DialogContent as UiDialogContent, DialogTrigger as UiDialogTrigger } from "@/components/ui/dialog";
+import { Drawer as UiDrawer, DrawerContent as UiDrawerContent, DrawerTrigger as UiDrawerTrigger } from "@/components/ui/drawer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -14,26 +14,26 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export function EmailSignInDialog() {
+export function EmailAuthDialog() {
     const [open, setOpen] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
-    const ComponentType = useMemo(() => (isDesktop ? Dialog : Drawer), [isDesktop]);
-    const ComponentTrigger = useMemo(() => (isDesktop ? DialogTrigger : DrawerTrigger), [isDesktop]);
-    const ComponentContent = useMemo(() => (isDesktop ? DialogContent : DrawerContent), [isDesktop]);
-    const componentProps = useMemo(() => isDesktop && { hideXIcon: isDesktop }, [isDesktop]);
+    const DialogType = useMemo(() => (isDesktop ? UiDialog : UiDrawer), [isDesktop]);
+    const DialogTrigger = useMemo(() => (isDesktop ? UiDialogTrigger : UiDrawerTrigger), [isDesktop]);
+    const DialogContent = useMemo(() => (isDesktop ? UiDialogContent : UiDrawerContent), [isDesktop]);
+    const dialogProps = useMemo(() => isDesktop && { hideXIcon: true }, [isDesktop]);
 
     return (
-        <ComponentType open={open} onOpenChange={setOpen}>
-            <ComponentTrigger asChild>
+        <DialogType open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
                 <Button variant="link" className="p-0 h-fit">
                     Continue with Email →
                 </Button>
-            </ComponentTrigger>
-            <ComponentContent {...componentProps} className="p-0">
+            </DialogTrigger>
+            <DialogContent {...dialogProps} className="p-0">
                 <EmailAuthForm />
-            </ComponentContent>
-        </ComponentType>
+            </DialogContent>
+        </DialogType>
     );
 }
 

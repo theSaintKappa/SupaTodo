@@ -1,4 +1,6 @@
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { TodoDialog } from "@/components/TodoDialog";
+import { TodoSort } from "@/components/TodoSort";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tables } from "@/types/db.types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +16,12 @@ export function TodosView({ userProfile }: { userProfile: Tables<"profiles"> }) 
 
     return (
         <>
-            <main>Hello {userProfile?.id}</main>
+            <main className="w-full max-w-2xl p-6 flex flex-col">
+                <div className="flex gap-4 justify-between">
+                    <TodoDialog />
+                    <TodoSort />
+                </div>
+            </main>
 
             <AlertDialog open={alertOpen}>
                 <AlertDialogContent>

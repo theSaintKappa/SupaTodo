@@ -11,6 +11,7 @@ import { Session } from "@supabase/supabase-js";
 import { LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function AuthenticatedUser({ session }: { session: Session }) {
     const { user } = session;
@@ -20,6 +21,7 @@ export function AuthenticatedUser({ session }: { session: Session }) {
 
     async function handleSignOut() {
         await supabase.auth.signOut();
+        toast("You have been signed out.");
         navigate("/");
     }
 

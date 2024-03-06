@@ -13,6 +13,7 @@ import { ArrowLeftCircle, Loader2, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const FormSchema = z.object({
@@ -34,10 +35,12 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
 
     async function handleSubmit({ userName, avatarUrl, syncWithProvider }: z.infer<typeof FormSchema>) {
         setLoading(true);
-        await supabase
+        const { error } = await supabase
             .from("profiles")
             .update({ user_name: userName, avatar_url: avatarUrl === "" ? null : avatarUrl, has_finished_signup: true, sync_with_provider: syncWithProvider })
             .eq("id", userProfile.id);
+
+        error ? toast.error("An error occurred while updating your profile.") : toast.success("Profile updated successfully.");
 
         setLoading(false);
         navigate("/");
