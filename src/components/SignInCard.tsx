@@ -57,7 +57,7 @@ export function SignInCard() {
                         <div className="flex flex-col gap-3">
                             {providers.map(({ name, icon }) => (
                                 <Button key={name} className="gap-2" onClick={() => signInWithProvider(name)} disabled={loading}>
-                                    {provider === name ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : icon}
+                                    {provider === name ? <Loader2 className="mr-2 h-4 min-w-4 animate-spin" /> : icon}
                                     Continue with {name}
                                 </Button>
                             ))}

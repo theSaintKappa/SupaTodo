@@ -18,7 +18,7 @@ export function TodosView({ userProfile }: { userProfile: Tables<"profiles"> }) 
         <>
             <main className="w-full max-w-2xl p-6 flex flex-col">
                 <div className="flex gap-4 justify-between">
-                    <TodoDialog />
+                    <TodoDialog userId={userProfile.id} />
                     <TodoSort />
                 </div>
             </main>

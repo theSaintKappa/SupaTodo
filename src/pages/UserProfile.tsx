@@ -130,12 +130,12 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
                             <div className="mt-10 flex gap-8 items-center justify-center">
                                 <Button variant="outline">
                                     <Link to="/" className="flex items-center">
-                                        <ArrowLeftCircle className="mr-2 h-4 w-4" />
+                                        <ArrowLeftCircle className="mr-2 h-4 min-w-4" />
                                         Go back
                                     </Link>
                                 </Button>
                                 <Button type="submit" className="px-10" disabled={loading}>
-                                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {loading && <Loader2 className="mr-2 h-4 min-w-4 animate-spin" />}
                                     Submit
                                 </Button>
                             </div>

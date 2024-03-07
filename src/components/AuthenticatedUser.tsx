@@ -58,11 +58,11 @@ export function AuthenticatedUser({ session }: { session: Session }) {
                             <DropdownMenuLabel>Hello, {userProfile.user_name}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => navigate("/profile")} className="flex gap-2 items-center cursor-pointer">
-                                <User className="h-4 w-4" />
+                                <User className="h-4 min-w-4" />
                                 Edit profile
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleSignOut} className="flex gap-2 items-center cursor-pointer">
-                                <LogOut className="h-4 w-4" />
+                                <LogOut className="h-4 min-w-4" />
                                 Log out
                             </DropdownMenuItem>
                         </DropdownMenuContent>

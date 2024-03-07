@@ -98,7 +98,7 @@ function EmailAuthForm({ className }: React.ComponentProps<"form">) {
                     {authResponse?.data.user?.identities?.length === 0 && <p className="text-primary text-sm font-bold text-center">A user with this email already exists. Maybe you used a provider to sign up?</p>}
 
                     <Button type="submit" className="m-auto mt-4 px-8" disabled={loading}>
-                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {loading && <Loader2 className="mr-2 h-4 min-w-4 animate-spin" />}
                         {submitText}
                     </Button>
                 </form>
