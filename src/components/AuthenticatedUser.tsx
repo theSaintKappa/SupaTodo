@@ -5,19 +5,20 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { TodosView } from "@/pages/TodosView";
 import { UserProfile } from "@/pages/UserProfile";
 import supabase from "@/supabase";
-import { Tables } from "@/types/db.types";
+import type { Tables } from "@/types/db.types";
 import { getUserProfile } from "@/utils/getUserProfile";
-import { Session } from "@supabase/supabase-js";
+import type { Session } from "@supabase/supabase-js";
 import { LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { TodoOrderProvider } from "./TodoOrderProvider";
 
 export function AuthenticatedUser({ session }: { session: Session }) {
     const { user } = session;
     const navigate = useNavigate();
 
-    const [userProfile, setUserProfile] = useState<Tables<"profiles">>({ id: "", user_name: "", avatar_url: "", has_finished_signup: true, sync_with_provider: false });
+    const [userProfile, setUserProfile] = useState<Tables<"profiles"> | null>(null);
 
     async function handleSignOut() {
         await supabase.auth.signOut();
@@ -25,22 +26,23 @@ export function AuthenticatedUser({ session }: { session: Session }) {
         navigate("/");
     }
 
+    async function fetchUserProfile() {
+        const profile = await getUserProfile(user);
+        setUserProfile(profile);
+    }
+
     useEffect(() => {
-        async function fetchUserProfile() {
-            if (user) {
-                const profile = await getUserProfile(user);
-                setUserProfile(profile);
-            }
-        }
         fetchUserProfile();
 
-        supabase
+        const profileChannel = supabase
             .channel("profile_updates")
-            .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, (payload) => {
-                setUserProfile(payload.new as Tables<"profiles">);
-            })
+            .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles" }, (payload) => setUserProfile(payload.new as Tables<"profiles">))
             .subscribe();
-    }, [user]);
+
+        return () => {
+            supabase.removeChannel(profileChannel);
+        };
+    }, []);
 
     return (
         <>
@@ -73,7 +75,14 @@ export function AuthenticatedUser({ session }: { session: Session }) {
             </nav>
 
             <Routes>
-                <Route path="/" element={<TodosView userProfile={userProfile} />} />
+                <Route
+                    path="/"
+                    element={
+                        <TodoOrderProvider>
+                            <TodosView user={user} userProfile={userProfile} />
+                        </TodoOrderProvider>
+                    }
+                />
                 <Route path="/profile" element={<UserProfile userProfile={userProfile} user={user} />} />
             </Routes>
         </>

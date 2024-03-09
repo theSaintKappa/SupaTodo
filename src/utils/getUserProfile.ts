@@ -1,6 +1,6 @@
 import supabase from "@/supabase";
-import { Tables } from "@/types/db.types";
-import { User } from "@supabase/supabase-js";
+import type { Tables } from "@/types/db.types";
+import type { User } from "@supabase/supabase-js";
 
 export async function getUserProfile(user: User): Promise<Tables<"profiles">> {
     const { data, error } = await supabase.from("profiles").select().eq("id", user.id).limit(1).single();

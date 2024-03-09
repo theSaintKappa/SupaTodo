@@ -6,9 +6,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import supabase from "@/supabase";
-import { Tables } from "@/types/db.types";
+import type { Tables } from "@/types/db.types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import { ArrowLeftCircle, Loader2, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -22,7 +22,8 @@ const FormSchema = z.object({
     syncWithProvider: z.boolean().default(false).optional(),
 });
 
-export function UserProfile({ userProfile, user }: { userProfile: Tables<"profiles">; user: User }) {
+export function UserProfile({ userProfile, user }: { userProfile: Tables<"profiles"> | null; user: User }) {
+    if (!userProfile) userProfile = { id: "", user_name: "", avatar_url: "", has_finished_signup: true, sync_with_provider: false };
     const [loading, setLoading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState<string>(userProfile.avatar_url ?? "");
 
@@ -34,6 +35,8 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
     });
 
     async function handleSubmit({ userName, avatarUrl, syncWithProvider }: z.infer<typeof FormSchema>) {
+        if (!userProfile) return;
+
         setLoading(true);
         const { error } = await supabase
             .from("profiles")
@@ -48,6 +51,8 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
 
     const syncWithProvider = form.watch("syncWithProvider");
     useEffect(() => {
+        if (!userProfile) return;
+
         if (syncWithProvider) {
             const { user_name, avatar_url } = user.user_metadata;
             form.setValue("userName", user_name);
@@ -77,7 +82,7 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
                                     <FormItem className="w-full">
                                         <FormLabel>User name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder={userProfile.user_name ?? undefined} onInput={() => form.setValue("syncWithProvider", false)} disabled={form.getValues("syncWithProvider")} {...field} />
+                                            <Input placeholder={userProfile?.user_name ?? undefined} onInput={() => form.setValue("syncWithProvider", false)} disabled={form.getValues("syncWithProvider")} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

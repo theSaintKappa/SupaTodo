@@ -9,7 +9,7 @@ import useMediaQuery from "@/hooks/use-media-query";
 import supabase from "@/supabase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BadgePlus, BookmarkPlus, Loader2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -30,8 +30,8 @@ export function TodoDialog({ userId }: { userId: string }) {
                     <span className="font-semibold">Add Todo</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent>
-                <AddTodoForm userId={userId} setOpen={setOpen} />
+            <DialogContent className="p-10">
+                <AddTodoForm userId={userId} closeDialog={() => setOpen(false)} />
             </DialogContent>
         </DialogType>
     );
@@ -46,26 +46,30 @@ type Priority = z.infer<typeof FormSchema>["priority"];
 
 const placeholderTodos = ["Buy eggs", "Call mom", "Go for a run", "Read a book", "Cook dinner", "Do the laundry", "Water the plants"];
 
-function AddTodoForm({ userId, setOpen }: { userId: string; setOpen: (open: boolean) => void }) {
+function AddTodoForm({ userId, closeDialog }: { userId: string; closeDialog: () => void }) {
     const [loading, setLoading] = useState(false);
-    const [priority, setPriority] = useState<Priority>("1");
+    const [todoPlaceholder, setTodoPlaceholder] = useState("");
+    const defaultPriority = "1";
+
+    useEffect(() => {
+        setTodoPlaceholder(placeholderTodos[Math.floor(Math.random() * placeholderTodos.length)]);
+    }, []);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
-        defaultValues: { title: "", description: "", priority },
+        defaultValues: { title: "", description: "", priority: defaultPriority },
     });
 
-    async function handleSubmit({ title, description }: z.infer<typeof FormSchema>) {
+    async function handleSubmit({ title, description, priority }: z.infer<typeof FormSchema>) {
         setLoading(true);
-        console.log({ title, description, priority });
         const { error } = await supabase.from("todos").insert({ title, description, priority: Number(priority), user_id: userId });
-        setOpen(false);
+        closeDialog();
         setLoading(false);
-        error ? toast.error("An error occurred while adding the Todo.") : toast.success("Todo added successfully.", { description: title });
+        error ? toast.error("An error occurred while adding the Todo.", { description: "Try again later." }) : toast.success("Todo added successfully.", { description: title });
     }
 
     return (
-        <div className="my-4 p-6 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-black text-center">Add a Todo</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full max-w-[22rem] mx-auto flex flex-col gap-4">
@@ -76,7 +80,7 @@ function AddTodoForm({ userId, setOpen }: { userId: string; setOpen: (open: bool
                             <FormItem>
                                 <FormLabel>Title</FormLabel>
                                 <FormControl>
-                                    <Input placeholder={placeholderTodos[Math.floor(Math.random() * placeholderTodos.length)]} {...field} />
+                                    <Input placeholder={todoPlaceholder} {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -87,7 +91,7 @@ function AddTodoForm({ userId, setOpen }: { userId: string; setOpen: (open: bool
                         name="description"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="">
+                                <FormLabel>
                                     Description <span className="opacity-50 text-xs">(optional)</span>
                                 </FormLabel>
                                 <FormControl>
@@ -104,7 +108,7 @@ function AddTodoForm({ userId, setOpen }: { userId: string; setOpen: (open: bool
                             <FormItem>
                                 <FormLabel>Priority</FormLabel>
                                 <FormControl>
-                                    <ToggleGroup onValueChange={(value: Priority) => setPriority(value)} defaultValue="1" type="single" variant="outline" className="justify-start">
+                                    <ToggleGroup onValueChange={(value: Priority) => form.setValue("priority", value)} defaultValue={defaultPriority} type="single" variant="outline" className="justify-start">
                                         <ToggleGroupItem value="1" aria-label="Low priority">
                                             <span className="text-green-500">Low</span>
                                         </ToggleGroupItem>

@@ -1,10 +1,10 @@
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme, type Theme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
-    const { setTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
 
     return (
         <DropdownMenu>
@@ -16,15 +16,17 @@ export function ThemeToggle() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")} className="cursor-pointer">
-                    Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")} className="cursor-pointer">
-                    Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")} className="cursor-pointer">
-                    System
-                </DropdownMenuItem>
+                <DropdownMenuRadioGroup value={theme} onValueChange={(value) => setTheme(value as Theme)}>
+                    <DropdownMenuRadioItem value="light" className="cursor-pointer">
+                        Light
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="dark" className="cursor-pointer">
+                        Dark
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="system" className="cursor-pointer">
+                        System
+                    </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
             </DropdownMenuContent>
         </DropdownMenu>
     );
