@@ -14,8 +14,8 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { TodoOrderProvider } from "./TodoOrderProvider";
 
-export function AuthenticatedUser({ session }: { session: Session }) {
-    const { user } = session;
+export function AuthenticatedUser({ session, isLoading }: { session: Session | null; isLoading: boolean }) {
+    // const { user } = session;
     const navigate = useNavigate();
 
     const [userProfile, setUserProfile] = useState<Tables<"profiles"> | null>(null);
@@ -23,15 +23,16 @@ export function AuthenticatedUser({ session }: { session: Session }) {
     async function handleSignOut() {
         await supabase.auth.signOut();
         toast("You have been signed out.");
-        navigate("/");
-    }
-
-    async function fetchUserProfile() {
-        const profile = await getUserProfile(user);
-        setUserProfile(profile);
+        navigate("/login", { replace: true });
     }
 
     useEffect(() => {
+        async function fetchUserProfile() {
+            if (!session) return;
+            const profile = await getUserProfile(session.user);
+            setUserProfile(profile);
+        }
+
         fetchUserProfile();
 
         const profileChannel = supabase
@@ -42,49 +43,56 @@ export function AuthenticatedUser({ session }: { session: Session }) {
         return () => {
             supabase.removeChannel(profileChannel);
         };
-    }, []);
+    }, [session]);
 
-    return (
-        <>
-            <nav className="absolute flex right-0 gap-2 m-2">
-                <ThemeToggle />
-                {userProfile && userProfile.user_name !== null ? (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <Avatar>
-                                <AvatarImage src={userProfile.avatar_url ?? undefined} alt={userProfile.user_name[0]} />
-                                <AvatarFallback>{userProfile.user_name[0]}</AvatarFallback>
-                            </Avatar>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuLabel>Hello, {userProfile.user_name}</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => navigate("/profile")} className="flex gap-2 items-center cursor-pointer">
-                                <User className="h-4 min-w-4" />
-                                Edit profile
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleSignOut} className="flex gap-2 items-center cursor-pointer">
-                                <LogOut className="h-4 min-w-4" />
-                                Log out
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                ) : (
-                    <Button onClick={handleSignOut}>Log out</Button>
-                )}
-            </nav>
+    useEffect(() => {
+        if (!session && !isLoading) navigate("/login");
+    }, [session, isLoading, navigate]);
 
-            <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <TodoOrderProvider>
-                            <TodosView user={user} userProfile={userProfile} />
-                        </TodoOrderProvider>
-                    }
-                />
-                <Route path="/profile" element={<UserProfile userProfile={userProfile} user={user} />} />
-            </Routes>
-        </>
-    );
+    if (!session && isLoading) return <h1>Loading todos...</h1>;
+
+    if (session)
+        return (
+            <>
+                <nav className="absolute flex right-0 gap-2 m-2">
+                    <ThemeToggle />
+                    {userProfile && userProfile.user_name !== null ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Avatar>
+                                    <AvatarImage src={userProfile.avatar_url ?? undefined} alt={userProfile.user_name[0]} />
+                                    <AvatarFallback>{userProfile.user_name[0]}</AvatarFallback>
+                                </Avatar>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>Hello, {userProfile.user_name}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => navigate("/profile")} className="flex gap-2 items-center cursor-pointer">
+                                    <User className="h-4 min-w-4" />
+                                    Edit profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleSignOut} className="flex gap-2 items-center cursor-pointer">
+                                    <LogOut className="h-4 min-w-4" />
+                                    Log out
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <Button onClick={handleSignOut}>Log out</Button>
+                    )}
+                </nav>
+
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <TodoOrderProvider>
+                                <TodosView user={session.user} userProfile={userProfile} />
+                            </TodoOrderProvider>
+                        }
+                    />
+                    <Route path="/profile" element={<UserProfile userProfile={userProfile} user={session.user} />} />
+                </Routes>
+            </>
+        );
 }

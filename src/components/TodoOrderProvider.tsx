@@ -23,7 +23,7 @@ const initialState: TodoOrderState = {
     sortBy: "created_at",
     setSortBy: () => null,
 
-    order: "asc",
+    order: "desc",
     setOrder: () => null,
 };
 

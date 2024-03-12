@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowDownNarrowWide, ArrowDownWideNarrow, CalendarDays, CaseSensitive, Check, ChevronDown } from "lucide-react";
+import { AlertTriangle, Ampersands, ArrowDownNarrowWide, ArrowDownWideNarrow, CalendarDays, CaseSensitive, Check, ChevronDown, Clock4, MessageCircleWarning } from "lucide-react";
 import { useTodoOrder, type Order, type SortBy } from "./TodoOrderProvider";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
@@ -8,27 +8,34 @@ export function TodoOrder() {
 
     const itemIndicator = <Check color="hsl(var(--primary))" strokeWidth={5} />;
 
+    const orderIcons = {
+        created_at: <Clock4 />,
+        title: <CaseSensitive />,
+        priority: <MessageCircleWarning />,
+        asc: <ArrowDownNarrowWide />,
+        desc: <ArrowDownWideNarrow />,
+    };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-auto w-auto">
-                    {sortBy} ({order})
-                    <ChevronDown className="h-6 min-w-6 mr-1" />
+                <Button variant="outline" className="h-auto w-auto gap-2">
+                    {orderIcons[sortBy]} {orderIcons[order]}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
                 <DropdownMenuLabel>Sort by</DropdownMenuLabel>
                 <DropdownMenuRadioGroup value={sortBy} onValueChange={(value) => setSortBy(value as SortBy)}>
                     <DropdownMenuRadioItem value="created_at" className="gap-1 cursor-pointer" itemIndicator={itemIndicator}>
-                        <CalendarDays className="h-5 min-w-5" />
+                        {orderIcons.created_at}
                         Date created
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="title" className="gap-1 cursor-pointer" itemIndicator={itemIndicator}>
-                        <CaseSensitive className="h-5 min-w-5" />
+                        {orderIcons.title}
                         Title
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="priority" className="gap-1 cursor-pointer" itemIndicator={itemIndicator}>
-                        <AlertTriangle className="h-5 min-w-5" />
+                        {orderIcons.priority}
                         Priority
                     </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
@@ -36,11 +43,11 @@ export function TodoOrder() {
                 <DropdownMenuLabel>Order</DropdownMenuLabel>
                 <DropdownMenuRadioGroup value={order} onValueChange={(value) => setOrder(value as Order)}>
                     <DropdownMenuRadioItem value="asc" className="gap-1 cursor-pointer" itemIndicator={itemIndicator}>
-                        <ArrowDownNarrowWide />
+                        {orderIcons.asc}
                         Ascending
                     </DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="desc" className="gap-1 cursor-pointer" itemIndicator={itemIndicator}>
-                        <ArrowDownWideNarrow />
+                        {orderIcons.desc}
                         Descending
                     </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>

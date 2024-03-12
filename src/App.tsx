@@ -1,29 +1,28 @@
 import { AuthenticatedUser } from "@/components/AuthenticatedUser";
 import { SignInCard } from "@/components/SignInCard";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Toaster } from "@/components/ui/sonner";
 import supabase from "@/supabase";
 import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 function App() {
     const [session, setSession] = useState<Session | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
-
-        return () => subscription.unsubscribe();
+        const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            setIsLoading(false);
+        });
+        return () => data.subscription.unsubscribe();
     }, []);
 
     return (
-        <ThemeProvider defaultTheme="system" storageKey="theme">
-            <Toaster />
-            {!session ? <SignInCard /> : <AuthenticatedUser key={session.user.id} session={session} />}
-        </ThemeProvider>
+        <Routes>
+            <Route path="/" element={session ? <Navigate to="/todos" /> : <Navigate to="/login" />} />
+            <Route path="/login" element={<SignInCard />} />
+            <Route path="/todos" element={<AuthenticatedUser key={session?.user.id} isLoading={isLoading} session={session} />} />
+        </Routes>
     );
 }
 

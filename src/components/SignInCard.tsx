@@ -39,7 +39,7 @@ export function SignInCard() {
     async function signInWithProvider(provider: Provider) {
         setLoading(true);
         setProvider(provider);
-        await supabase.auth.signInWithOAuth({ provider: provider.toLowerCase() as Lowercase<Provider>, options: { redirectTo: window.location.origin } });
+        await supabase.auth.signInWithOAuth({ provider: provider.toLowerCase() as Lowercase<Provider>, options: { redirectTo: `${window.location.origin}/todos` } });
     }
 
     return (

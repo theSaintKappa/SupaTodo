@@ -28,6 +28,7 @@ export function TodosView({ user, userProfile }: { user: User; userProfile: Tabl
                 .from("todos")
                 .select("*")
                 .eq("user_id", user.id)
+                .order("completed")
                 .order(sortBy, { ascending: order === "asc" });
             data && setTodos(data);
             console.log("fetching todos");
@@ -60,7 +61,6 @@ export function TodosView({ user, userProfile }: { user: User; userProfile: Tabl
                     <TodoDialog userId={user.id} />
                     <TodoOrder />
                 </div>
-                {sortBy} ({order})
                 <TodosList todos={todos} />
             </main>
 
