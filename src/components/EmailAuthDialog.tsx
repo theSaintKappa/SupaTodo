@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useMediaQuery from "@/hooks/use-media-query";
 import supabase from "@/supabase";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthResponse } from "@supabase/supabase-js";
+import type { AuthError, AuthResponse, User } from "@supabase/supabase-js";
 import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -57,8 +57,22 @@ function EmailAuthForm({ className }: React.ComponentProps<"form">) {
         setLoading(true);
         setAuthResponse(null);
         if (action === "signIn") await supabase.auth.signInWithPassword({ email, password }).then((res) => setAuthResponse(res));
-        else if (action === "signUp") await supabase.auth.signUp({ email, password }).then((res) => setAuthResponse(res));
+        else if (action === "signUp") await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/todos` } }).then((res) => setAuthResponse(res));
         setLoading(false);
+    }
+
+    function AuthMessage({ user, error }: { user: User | null; error: AuthError | null }) {
+        console.log(authResponse);
+
+        if (error) return <p className="text-destructive text-sm font-bold text-center">{error.message}</p>;
+        if (!user) return null;
+        if (user.identities && user.identities.length === 0)
+            return (
+                <p className="text-destructive text-sm font-bold text-center">
+                    A user with this email already exists. <span className="text-xs font-normal">Maybe you used an OAuth provider to sign up?</span>
+                </p>
+            );
+        if (!user.email_confirmed_at || user.role === "authenticated") return <p className="text-primary text-sm font-bold text-center">We've sent a verification email to {user?.email}</p>;
     }
 
     function FormInputs(header: string, submitText: string) {
@@ -93,9 +107,7 @@ function EmailAuthForm({ className }: React.ComponentProps<"form">) {
                         )}
                     />
 
-                    {authResponse?.error && <p className="text-destructive text-sm font-bold text-center">{authResponse.error.message}</p>}
-                    {authResponse?.data.user?.role && <p className="text-primary text-sm font-bold text-center">We've sent a verification email to {authResponse.data.user.email}</p>}
-                    {authResponse?.data.user?.identities?.length === 0 && <p className="text-primary text-sm font-bold text-center">A user with this email already exists. Maybe you used a provider to sign up?</p>}
+                    {authResponse && <AuthMessage user={authResponse.data.user} error={authResponse.error} />}
 
                     <Button type="submit" className="m-auto mt-4 px-8" disabled={loading}>
                         {loading && <Loader2 className="mr-2 h-4 min-w-4 animate-spin" />}

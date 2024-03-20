@@ -1,5 +1,4 @@
 import { EmailAuthDialog } from "@/components/EmailAuthDialog";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -43,30 +42,25 @@ export function SignInCard() {
     }
 
     return (
-        <>
-            <div className="absolute right-0 m-2">
-                <ThemeToggle />
-            </div>
-            <main className="w-full flex justify-center items-center p-4">
-                <Card className="w-full max-w-xl py-8 flex flex-col items-center gap-4 animate-fly-in">
-                    <CardHeader className="flex flex-col items-center">
-                        <CardTitle className="text-3xl text-center font-extrabold">Log in to continue</CardTitle>
-                        <CardDescription className="text-sm text-center font-light">Your todos will be synced to your account</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-8 px-0">
-                        <div className="flex flex-col gap-3">
-                            {providers.map(({ name, icon }) => (
-                                <Button key={name} className="gap-2" onClick={() => signInWithProvider(name)} disabled={loading}>
-                                    {provider === name ? <Loader2 className="mr-2 h-4 min-w-4 animate-spin" /> : icon}
-                                    Continue with {name}
-                                </Button>
-                            ))}
-                        </div>
-                        <Separator className="relative flex justify-center items-center before:absolute before:content-['or'] before:font-medium text-xs before:bg-card before:px-1 before:leading-3 before:text-slate-400" />
-                        <EmailAuthDialog />
-                    </CardContent>
-                </Card>
-            </main>
-        </>
+        <main className="w-full flex justify-center items-center p-4">
+            <Card className="w-full max-w-xl py-8 flex flex-col items-center gap-4 animate-fly-in">
+                <CardHeader className="flex flex-col items-center">
+                    <CardTitle className="text-3xl text-center font-extrabold">Log in to continue</CardTitle>
+                    <CardDescription className="text-sm text-center font-light">Your todos will be synced to your account</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-8 px-0">
+                    <div className="flex flex-col gap-3">
+                        {providers.map(({ name, icon }) => (
+                            <Button key={name} className="gap-2" onClick={() => signInWithProvider(name)} disabled={loading}>
+                                {provider === name ? <Loader2 className="mr-2 h-4 min-w-4 animate-spin" /> : icon}
+                                Continue with {name}
+                            </Button>
+                        ))}
+                    </div>
+                    <Separator className="relative flex justify-center items-center before:absolute before:content-['or'] before:font-medium text-xs before:bg-card before:px-1 before:leading-3 before:text-slate-400" />
+                    <EmailAuthDialog />
+                </CardContent>
+            </Card>
+        </main>
     );
 }

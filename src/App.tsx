@@ -1,28 +1,31 @@
-import { AuthenticatedUser } from "@/components/AuthenticatedUser";
+import { TodosPage } from "@/pages/TodosPage";
 import { SignInCard } from "@/components/SignInCard";
-import supabase from "@/supabase";
-import type { Session } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { useSession } from "@/components/SessionProvider";
+import { ProfilePage } from "@/pages/ProfilePage";
+import { useEffect } from "react";
+import { Navigation } from "@/components/Navigation";
 
 function App() {
-    const [session, setSession] = useState<Session | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { session, sessionLoading } = useSession();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            setIsLoading(false);
-        });
-        return () => data.subscription.unsubscribe();
-    }, []);
+        if (!session && !sessionLoading) return navigate("/login");
+        if (location.pathname === "/" || location.pathname === "/login") navigate("/todos");
+    }, [session, sessionLoading, navigate, location.pathname]);
 
     return (
-        <Routes>
-            <Route path="/" element={session ? <Navigate to="/todos" /> : <Navigate to="/login" />} />
-            <Route path="/login" element={<SignInCard />} />
-            <Route path="/todos" element={<AuthenticatedUser key={session?.user.id} isLoading={isLoading} session={session} />} />
-        </Routes>
+        <>
+            <Navigation />
+            <Routes>
+                <Route path="/" element={!session && !sessionLoading ? <Navigate to="/login" /> : <Navigate to="/todos" />} />
+                <Route path="/login" element={<SignInCard />} />
+                <Route path="/todos" element={<TodosPage key={session?.user.id} />} />
+                <Route path="/profile" element={<ProfilePage />} />
+            </Routes>
+        </>
     );
 }
 

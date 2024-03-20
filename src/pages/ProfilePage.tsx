@@ -1,3 +1,4 @@
+import { useSession } from "@/components/SessionProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,11 +6,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import supabase from "@/supabase";
-import type { Tables } from "@/types/db.types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@supabase/supabase-js";
-import { ArrowLeftCircle, Loader2, UserRound } from "lucide-react";
+import { ArrowLeftCircle, Loader2, UserRound, BadgeHelp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,26 +22,26 @@ const FormSchema = z.object({
     syncWithProvider: z.boolean().default(false).optional(),
 });
 
-export function UserProfile({ userProfile, user }: { userProfile: Tables<"profiles"> | null; user: User }) {
-    if (!userProfile) userProfile = { id: "", user_name: "", avatar_url: "", has_finished_signup: true, sync_with_provider: false };
+export function ProfilePage() {
+    const { profile, session } = useSession();
     const [loading, setLoading] = useState(false);
-    const [avatarUrl, setAvatarUrl] = useState<string>(userProfile.avatar_url ?? "");
+    const [avatarUrl, setAvatarUrl] = useState<string>(profile?.avatar_url ?? "");
 
     const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
-        defaultValues: { userName: userProfile.user_name ?? "", avatarUrl: userProfile.avatar_url ?? "", syncWithProvider: userProfile.sync_with_provider },
+        defaultValues: { userName: profile?.user_name ?? "", avatarUrl: profile?.avatar_url ?? "", syncWithProvider: profile?.sync_with_provider ?? false },
     });
 
     async function handleSubmit({ userName, avatarUrl, syncWithProvider }: z.infer<typeof FormSchema>) {
-        if (!userProfile) return;
+        if (!profile) return;
 
         setLoading(true);
         const { error } = await supabase
             .from("profiles")
             .update({ user_name: userName, avatar_url: avatarUrl === "" ? null : avatarUrl, has_finished_signup: true, sync_with_provider: syncWithProvider })
-            .eq("id", userProfile.id);
+            .eq("id", profile.id);
 
         error ? toast.error("An error occurred while updating your profile.") : toast.success("Profile updated successfully.");
 
@@ -49,21 +49,17 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
         navigate("/");
     }
 
-    const syncWithProvider = form.watch("syncWithProvider");
     useEffect(() => {
-        if (!userProfile) return;
+        if (!profile) return;
+        form.setValue("userName", profile.user_name ?? "");
+        form.setValue("avatarUrl", profile.avatar_url ?? "");
+        form.setValue("syncWithProvider", profile.sync_with_provider ?? false);
+        setAvatarUrl(profile.avatar_url ?? "");
+    }, [profile, form]);
 
-        if (syncWithProvider) {
-            const { user_name, avatar_url } = user.user_metadata;
-            form.setValue("userName", user_name);
-            form.setValue("avatarUrl", avatar_url);
-            setAvatarUrl(avatar_url);
-            return;
-        }
-        form.setValue("userName", userProfile.user_name ?? "");
-        form.setValue("avatarUrl", userProfile.avatar_url ?? "");
-        setAvatarUrl(userProfile.avatar_url ?? "");
-    }, [syncWithProvider, userProfile, user.user_metadata, form]);
+    if (!session?.user) return null;
+
+    const hasOAuthMetadata = () => session.user.identities?.some((identity) => identity.provider !== "email") ?? false;
 
     return (
         <main className="w-full flex justify-center items-center p-4">
@@ -82,7 +78,7 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
                                     <FormItem className="w-full">
                                         <FormLabel>User name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder={userProfile?.user_name ?? undefined} onInput={() => form.setValue("syncWithProvider", false)} disabled={form.getValues("syncWithProvider")} {...field} />
+                                            <Input placeholder={profile?.user_name ?? undefined} onInput={() => form.setValue("syncWithProvider", false)} disabled={form.getValues("syncWithProvider")} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -124,12 +120,24 @@ export function UserProfile({ userProfile, user }: { userProfile: Tables<"profil
                                 control={form.control}
                                 name="syncWithProvider"
                                 render={({ field }) => (
-                                    <FormItem className="flex space-x-2 space-y-0">
-                                        <FormControl>
-                                            <Checkbox className="rounded-[6px]" checked={field.value} onCheckedChange={field.onChange} disabled={user.app_metadata.provider === "email"} />
-                                        </FormControl>
-                                        <FormLabel className="leading-4">Sync profile with provider</FormLabel>
-                                    </FormItem>
+                                    <div className="flex items-center">
+                                        <FormItem className="flex gap-2 space-y-0">
+                                            <FormControl>
+                                                <Checkbox className="rounded-[6px]" checked={field.value} onCheckedChange={field.onChange} disabled={!hasOAuthMetadata()} />
+                                            </FormControl>
+                                            <FormLabel className="leading-4">Sync profile with provider</FormLabel>
+                                        </FormItem>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <BadgeHelp className="w-min-4 h-4" />
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>{hasOAuthMetadata() ? "Synchronize the user name and avatar with the provider you used to log in." : "This feature is only available when you sign up through an OAuth provider."}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
                                 )}
                             />
                             <div className="mt-10 flex gap-8 items-center justify-center">

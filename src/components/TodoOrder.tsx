@@ -1,7 +1,7 @@
-import { AlertTriangle, Ampersands, ArrowDownNarrowWide, ArrowDownWideNarrow, CalendarDays, CaseSensitive, Check, ChevronDown, Clock4, MessageCircleWarning } from "lucide-react";
-import { useTodoOrder, type Order, type SortBy } from "./TodoOrderProvider";
-import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { ArrowDownNarrowWide, ArrowDownWideNarrow, CaseSensitive, Check, Clock4, MessageCircleWarning } from "lucide-react";
+import { useTodoOrder, type Order, type SortBy } from "@/components/TodoOrderProvider";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export function TodoOrder() {
     const { sortBy, setSortBy, order, setOrder } = useTodoOrder();

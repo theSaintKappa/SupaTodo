@@ -1,10 +1,9 @@
-import { createContext, useContext, useState } from "react";
+import { type PropsWithChildren, createContext, useContext, useState } from "react";
 
 export type SortBy = "created_at" | "title" | "priority";
 export type Order = "asc" | "desc";
 
 interface TodoOrderProviderProps {
-    children: React.ReactNode;
     defaultSortBy?: SortBy;
     defaultOrder?: Order;
     sortByStorageKey?: string;
@@ -29,7 +28,7 @@ const initialState: TodoOrderState = {
 
 export const TodoOrderProviderContext = createContext<TodoOrderState>(initialState);
 
-export const TodoOrderProvider = ({ children, defaultSortBy = initialState.sortBy, defaultOrder = initialState.order, sortByStorageKey = "todos-sort-by", orderStorageKey = "todos-order", ...props }: TodoOrderProviderProps) => {
+export const TodoOrderProvider = ({ children, defaultSortBy = initialState.sortBy, defaultOrder = initialState.order, sortByStorageKey = "todos-sort-by", orderStorageKey = "todos-order", ...props }: PropsWithChildren<TodoOrderProviderProps>) => {
     const [sortBy, setSortBy] = useState<SortBy>(() => (localStorage.getItem(sortByStorageKey) as SortBy) || defaultSortBy);
     const [order, setOrder] = useState<Order>(() => (localStorage.getItem(orderStorageKey) as Order) || defaultOrder);
 

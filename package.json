@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "bunx --bun vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -24,6 +24,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-toggle-group": "^1.0.4",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "@supabase/supabase-js": "^2.39.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -41,6 +42,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bun": "^1.0.10",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",

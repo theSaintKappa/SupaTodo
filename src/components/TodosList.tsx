@@ -3,8 +3,8 @@ import supabase from "@/supabase";
 import type { Tables } from "@/types/db.types";
 import { cn } from "@/utils/cn";
 import { CheckCheck, SquarePen, Trash2 } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 function setCompleted(id: number, completed: boolean) {
     supabase.from("todos").update({ completed }).eq("id", id).then(console.log);
