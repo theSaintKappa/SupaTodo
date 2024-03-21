@@ -11,7 +11,7 @@ import type { Tables } from "@/types/db.types";
 import { cn } from "@/utils/cn";
 import type { Priority } from "@/utils/todoFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, SquarePen } from "lucide-react";
+import { Loader2, SaveAll, SquarePen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,6 +41,12 @@ export function EditTodoDialog({ todo }: { todo: Tables<"todos"> }) {
         error ? toast.error("An error occurred while editing the Todo.", { description: "Try again later." }) : toast.success("Todo edited successfully.", { description: title });
     }
 
+    async function removeTodo() {
+        setOpen(false);
+        const { error } = await supabase.from("todos").delete().eq("id", todo.id);
+        error ? toast.error("An error occurred while deleting the Todo.", { description: "Try again later." }) : toast.success("Todo deleted successfully.", { description: todo.title });
+    }
+
     return (
         <DialogType open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -48,7 +54,7 @@ export function EditTodoDialog({ todo }: { todo: Tables<"todos"> }) {
                     <SquarePen className="h-5 min-w-5" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className={isDesktop ? "py-10" : "pb-8"}>
+            <DialogContent className={isDesktop ? "py-10" : "px-6 pb-6"}>
                 <div className="flex flex-col gap-2">
                     <h1 className={cn("text-3xl font-black text-center", !isDesktop && "mt-4")}>Edit Todo ✏️</h1>
                     <Form {...form}>
@@ -104,9 +110,15 @@ export function EditTodoDialog({ todo }: { todo: Tables<"todos"> }) {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="mt-4" disabled={loading}>
-                                {loading && <Loader2 className="mr-2 h-4 min-w-4 animate-spin" />}Save
-                            </Button>
+                            <div className="mt-4 flex gap-4">
+                                <Button type="button" variant="destructive" className="flex items-center gap-1 w-full" onClick={removeTodo} disabled={loading}>
+                                    <Trash2 className="h-4 min-w-4" />
+                                    Remove
+                                </Button>
+                                <Button type="submit" className="flex items-center gap-1 w-full" disabled={loading}>
+                                    {loading ? <Loader2 className="h-4 min-w-4 animate-spin" /> : <SaveAll className="h-4 min-w-4" />}Save
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 </div>

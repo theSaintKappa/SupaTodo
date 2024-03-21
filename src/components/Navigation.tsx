@@ -1,7 +1,7 @@
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { LogOut, User, UserRound } from "lucide-react";
+import { Github, LogOut, SquareArrowOutUpRight, User, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useSession } from "@/components/SessionProvider";
@@ -34,7 +34,7 @@ export function Navigation() {
                     <DropdownMenuContent>
                         {profile?.user_name && (
                             <>
-                                <DropdownMenuLabel className="font-medium">Hi there, {profile?.user_name}</DropdownMenuLabel>
+                                <DropdownMenuLabel className="font-medium">Hi there, {profile?.user_name}!</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                             </>
                         )}
@@ -45,6 +45,14 @@ export function Navigation() {
                         <DropdownMenuItem onClick={handleSignOut} className="flex gap-2 items-center cursor-pointer">
                             <LogOut className="h-4 min-w-4" />
                             Log out
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="cursor-pointer" asChild>
+                            <a href="https://github.com/theSaintKappa/SupaTodo" target="_blank" rel="noreferrer">
+                                <Github className="h-4 min-w-4 mr-2" />
+                                Repo
+                                <SquareArrowOutUpRight className="h-3 min-w-3 ml-1" />
+                            </a>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

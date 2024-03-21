@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import supabase from "@/supabase";
 import type { Tables } from "@/types/db.types";
 import { cn } from "@/utils/cn";
-import { Square, SquareCheckBig, Trash2 } from "lucide-react";
+import { SquareCheckBig, SquareDot, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EditTodoDialog } from "@/components/EditTodoDialog";
@@ -30,18 +30,18 @@ export function TodosList({ todos, todosLoading }: { todos: Tables<"todos">[]; t
     if (!todosLoading && todos.length === 0)
         return (
             <div className="flex flex-col items-center gap-2 h-full justify-center text-center text-balance animate-in zoom-in duration-200">
-                <h1 className="text-3xl md:text-4xl font-bold">You haven't added any todos yet!</h1>
-                <p className="md:text-2xl text-gray-400">Why don't we get started by adding one shall we?</p>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">You haven't added any todos yet!</h1>
+                <p className="text-sm sm:text-base md:text-xl text-gray-400">Why don't we get started by adding one shall we?</p>
             </div>
         );
 
     return (
         <div className="flex flex-col gap-4 py-4">
             {todos.map((todo) => (
-                <Card key={todo.id} className={cn("flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between p-4 border-2 animate-in fade-in-0 slide-in-from-top-4 duration-300", todo.completed ? "border-opacity-40" : "border-opacity-75", borderColors[Number(todo.priority) - 1])}>
+                <Card key={todo.id} className={cn("flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between p-4 border-2 overflow-hidden animate-in fade-in-0 slide-in-from-top-4 duration-300", todo.completed ? "border-opacity-40" : "border-opacity-75", borderColors[Number(todo.priority) - 1])}>
                     <CardHeader className={cn("p-0", todo.completed && "opacity-40")}>
                         <CardTitle className="flex items-center gap-2">
-                            <span className={cn("break-all", todo.completed && "line-through")}>{todo.title}</span>
+                            <span className={cn("break-words", todo.completed && "line-through")}>{todo.title}</span>
                             <Badge variant="outline" className={cn("border-2 border-opacity-75 hidden md:block", borderColors[Number(todo.priority) - 1])}>
                                 {priorityText[Number(todo.priority) - 1]}
                             </Badge>
@@ -49,7 +49,7 @@ export function TodosList({ todos, todosLoading }: { todos: Tables<"todos">[]; t
                         {todo.description && <CardDescription className="break-all">{todo.description}</CardDescription>}
                     </CardHeader>
                     <Separator className="md:hidden" />
-                    <CardContent className="p-0 w-full flex items-center justify-between md:w-auto gap-2">
+                    <CardContent className="p-0 w-full flex items-end justify-between md:w-auto gap-2">
                         <div className="flex flex-row-reverse md:flex-row gap-2">
                             {todo.completed ? (
                                 <>
@@ -64,7 +64,7 @@ export function TodosList({ todos, todosLoading }: { todos: Tables<"todos">[]; t
                                 <>
                                     <EditTodoDialog todo={todo} />
                                     <Button onClick={() => setCompleted(todo.id, !todo.completed)} className="px-8">
-                                        <Square className="h-5 min-w-5" />
+                                        <SquareDot className="h-5 min-w-5" />
                                     </Button>
                                 </>
                             )}

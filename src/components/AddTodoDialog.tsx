@@ -56,10 +56,10 @@ export function AddTodoDialog() {
             <DialogTrigger asChild>
                 <Button className="flex gap-3 px-8 py-6">
                     <CirclePlus className="h-7 min-w-7" strokeWidth={2.75} />
-                    <span className="font-bold">Add Todo</span>
+                    <span className="font-bold text-base">Add Todo</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className={isDesktop ? "py-10" : "pb-8"}>
+            <DialogContent className={isDesktop ? "py-10" : "px-6 pb-6"}>
                 <div className="flex flex-col gap-2">
                     <h1 className={cn("text-3xl font-black text-center", !isDesktop && "mt-4")}>Add a Todo ➕</h1>
                     <Form {...form}>
