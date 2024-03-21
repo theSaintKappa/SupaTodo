@@ -16,18 +16,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const FormSchema = z.object({
-    userName: z.string().min(3, { message: "Username must be at least 3 characters." }).max(16, { message: "Username must be at most 16 characters." }),
-    avatarUrl: z.union([z.string().url({ message: "Please enter a valid URL." }), z.literal("")]),
-    syncWithProvider: z.boolean().default(false).optional(),
-});
-
 export function ProfilePage() {
     const { profile, session } = useSession();
     const [loading, setLoading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState<string>(profile?.avatar_url ?? "");
 
     const navigate = useNavigate();
+
+    const FormSchema = z.object({
+        userName: z.string().min(3, { message: "Username must be at least 3 characters." }).max(16, { message: "Username must be at most 16 characters." }),
+        avatarUrl: z.union([z.string().url({ message: "Please enter a valid URL." }), z.literal("")]),
+        syncWithProvider: z.boolean().default(false).optional(),
+    });
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -141,7 +141,7 @@ export function ProfilePage() {
                                 )}
                             />
                             <div className="mt-10 flex gap-8 items-center justify-center">
-                                <Button variant="outline">
+                                <Button variant="outline" asChild>
                                     <Link to="/" className="flex items-center">
                                         <ArrowLeftCircle className="mr-2 h-4 min-w-4" />
                                         Go back

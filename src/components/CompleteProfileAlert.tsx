@@ -1,7 +1,7 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSession } from "./SessionProvider";
+import { useSession } from "@/components/SessionProvider";
 import { ArrowRightCircle } from "lucide-react";
 
 export function CompleteProfileAlert() {

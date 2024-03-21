@@ -5,6 +5,7 @@ import { useSession } from "@/components/SessionProvider";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import { TodoOrderProvider } from "@/components/TodoOrderProvider";
 
 function App() {
     const { session, sessionLoading } = useSession();
@@ -22,7 +23,14 @@ function App() {
             <Routes>
                 <Route path="/" element={!session && !sessionLoading ? <Navigate to="/login" /> : <Navigate to="/todos" />} />
                 <Route path="/login" element={<SignInCard />} />
-                <Route path="/todos" element={<TodosPage key={session?.user.id} />} />
+                <Route
+                    path="/todos"
+                    element={
+                        <TodoOrderProvider>
+                            <TodosPage key={session?.user.id} />
+                        </TodoOrderProvider>
+                    }
+                />
                 <Route path="/profile" element={<ProfilePage />} />
             </Routes>
         </>
